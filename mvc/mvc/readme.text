@@ -1,0 +1,905 @@
+1 - MISE EN PLACE DE L'ARBORESCENCE :
+
+    A - CREATION D'UN REPERTOIRE "APP" A LA RACINE DU PROJET. (au même niveau qu'index.php).
+        POURQUOI FAIRE ?
+
+        Ce répertoire a pour vocation de segmenter le projet web sur les axes FRONT & BACK :
+        - D'un côté les ressources orientées client (également nommées publiques)
+        - De l'autre, les fichiers PHP responsables du bon fonctionnement de l'application (core).
+
+        Index.php aura pour utilité de réquisitionner les ressources adéquates en fonction 
+        des paramètres passés dans l'URL. On appelle ça un routeur (mais ce sera étudié 
+        plus tard.)
+
+    B - CREATION DES REPERTOIRES "PUBLIC" & "CORE" DANS LE DOSSIER "APP".
+        -> public : regrouper les ressources clientes (css, js, uploads, images, etc.)
+                    ces ressources sont réparties sous forme de sous dossiers.
+
+        -> core : regrouper le MVC (models, views, controllers)
+                les composantes du MVC sont réparties sous forme de sous dossiers.
+
+    C - A chaque nouveau projet PHP from scratch (réalisé sans framework), 
+        essayez (vraiment) de respecter cette nouvelle arborescence de fichiers.
+        Ca fera la différence entre vous et les autres développeurs. (démarquer)
+
+2 - CONVERSION DU PROJET BASIQUE SOUS FORME D'ARCHITECTURE MVC :
+
+    A - DECORTIQUAGE :
+
+        1 - RAPPEL DE COURS : MVC segmente l'application en 3 composantes distinctes :
+            -> Modeles : Tout ce qui a attrait aux intéractions avec une base de données.
+            -> Vues : Toute ce qui est visible (globalement la partie HTML & boucles PHP)
+            -> Controlleurs : L'aspect logique de l'application (contrôle d'intégrité,
+                        et autres opérations sur les données tel que mise en minuscule, 
+                        conversion en JSON, etc) ainsi que la mise en relation entre 
+                        Modeles et Vues.
+
+            Nous allons donc décortiquer le projet fourni de sorte à isoler ces 3 
+            composantes.
+
+        2 - MISE EN APPLICATION : 
+
+            -> VUES : 
+                    A - Ouvrir les fichiers "header.php", "footer.php" ainsi que "error.php".
+                        Etudier ce qui les composent (Affichage ? Base de Données ? Logique ?)
+                      
+                        Il s'agit bel et bien de fichiers destinés à l'affichae d'interface.
+                        Ce sont donc des VUES.
+                        De ce fait, on les déplace à la racine du répertoire "views".
+
+                    B - Ouvrir le fichier "all.php".
+                        Etudier ce qu'il comporte (Affichage ? Base de Données ? Logique ?)
+                        Effectivement, il comporte plusieurs choses : 
+                            -> Affichage (lignes 1 à 6).
+                            -> Base de données (lignes 8 à 29).
+                            -> Affichage (lignes 31 à 62).
+                        
+                        Nous allons ainsi isoler la partie affichage de la page dans un fichier
+                        situé dans le répertoire "views". 
+
+                        /!/ Le nom du fichier dépend de la fonctionnalité qu'il offre.
+                            De notre côté ce fichier permets l'affichage de TOUS les livres.
+                            Il conviendra donc de le nommer : "all.php".
+
+                        /!/ Les vues appartenant à une même entité sont généralement 
+                            regroupées au sein d'un répertoire dédié (dont le nom est 
+                            identique à celui de l'entité).
+                            Dans notre cas, l'ensemble des vues associées aux "books"
+                            seront regroupées dans un répertoire intitulé "book".
+                        
+                        Que reste t-il dans le fichier "all.php" duquel nous avons 
+                        retiré la partie VUES ? 
+                        -> Il reste la partie en relation avec la Base de Données 
+                           (que nous epxloiterons un tout petit peu plus tard).
+                
+                    C - Ouvrir le fichier "update.php".
+                        Etudier ce qu'il comporte (Affichage ? Base de Données ? Logique ?)
+
+                        Effectivement, il comporte un peu de tout : 
+                            -> Logique (lignes 1 à 7) : regarder si le formulaire a été transmis.
+                            -> Base de données (lignes 9 à 30).
+                            -> Logique (lignes 35 à 42).
+                            -> Affichage (lignes 43 à 56).
+                            -> Logique (lignes 58 à 72).
+                            -> Base de données (lignes 74 à 94).
+
+                        Nous allons ainsi isoler la partie affichage de la page dans un fichier
+                        situé dans le répertoire "views/book".
+
+                        Pour nommer ce fichier, demandons nous à quoi il sert.
+                        Il s'agit d'un fomulaire de mise à jour de données.
+                        Ainsi, il pourrait s'intituler "update.php".
+                    
+                    D - Ouvrir le fichier "add.php".
+                        Etudier ce qu'il comporte (Affichage ? Base de Données ? Logique ?)
+
+                        Ce fichier comporte :
+                        -> Affichage (lignes 1 à 13).
+                        -> Logique (lignes 15 à 66). => avec un peu d'affichage traité + tard.
+                        -> Base de données (lignes 67 à 84).
+
+                        Nous allons ainsi isoler la partie affichage de la page dans un fichier
+                        situé dans le répertoire "views/book".
+
+                        Pour nommer ce fichier, demandons nous à quoi il sert.
+                        Il s'agit d'un fomulaire destiné à l'ajout de données.
+                        Ainsi, il pourrait s'intituler "add.php".
+
+                    E - Ouvrir le fichier "delete.php".
+                        Etudier ce qu'il comporte (Affichage ? Base de Données ? Logique ?)
+
+                        Ce fichier ne comporte pas d'affichage.
+                        -> Logique + Base de Données.
+
+                        Nous le traiteront ultérieurement.
+
+            -> MODELES : 
+            
+                    A ce stade, l'application est cassée et c'est normal rassurez vous !
+                    On va la remettre d'applomb très rapidement en effectuant la liaison 
+                    entre les vues et le model. (pas encore avec le controlleur, 
+                    ce sera pour plus tard).
+
+                    La première chose qu'il parait logique de faire est de répliquer 
+                    les étapes réalisées pour isoler les vues, sur la partie modeles.
+
+                    RAPPEL DE COURS : La notion de MODEL fait référence à tout ce qui a 
+                    attrait aux intéractions avec une base de données.
+
+                    A - Ouvrir le fichiers "dbConnect.php".
+                        Etudier ce qui le composent (Affichage ? Base de Données ? Logique ?)
+                      
+                        Il s'agit bel et bien d'un fichier destiné à la connexion à une BDD.
+                        Il s'agit donc d'un MODELE.
+                        De ce fait, on le déplace à la racine du répertoire "models".
+                    
+                    B - Ouvrir le fichier "all.php".
+                        
+                        1 - Etudier ce qu'il en reste (Affichage ? Base de Données ? Logique ?)
+                            Effectivement, il comporte : 
+                            -> Base de données.
+                        
+                            Nous allons ainsi isoler cette partie BDD dans un fichier dédié
+                            situé dans le répertoire "models".
+
+                            /!/ Jusqu'à présent nous avions pris l'habitude de créer un 
+                            fichier par action.
+
+                            L'approche MVC conseille de créer un fichier unique par entité 
+                            dans lequel chaque action a vocation a être contenue au sein 
+                            d'une fonction.
+                        
+                            En d'autres termes : 
+                            1 fichier = regroupement de TOUTES les actions d'une entité.
+
+                            Le nom du fichier prend pour nom, le nom de l'entité. (au singulier)
+                            Il est ensuite suffixé par ce qu'il représente (à savoir un model).
+                            Le tout, en camelCase.
+
+                            Dans notre cas, l'ensemble des actions associées aux "books"
+                            seront regroupées dans un fichier intitulé "bookModel".
+
+                        2 - RESTE A CREER UNE FONCTION DONT LE CORPS EST STRICTEMENT 
+                            IDENTIQUE A LA PARTIE BASE DE DONNEES DU FICHIER "ALL.PHP".
+
+                            /!/ PAR CONVENTION, LE NOM DE CETTE FONCTION DOIT ETRE 
+                            EQUIVOQUE A CE QU'ELLE PERMETS DE FAIRE.
+
+                            Dans notre cas, nous la nommerons getAll() car elle a vocation
+                            à récupérer l'ensemble des "books".
+                            GET = recuperer + ALL = tous
+
+                            /!/ Le chemin permettant de réquisitionner la connexion à la 
+                            BDD n'est plus cohérent : les deux sont aux même niveau.
+
+                        3 - LIAISON DU MODEL A LA VUE :
+
+                            C'est à cet instant que les choses devraient de nouveau fonctionner.
+                            Pour cela, il suffit de se rendre au sein de la vue intitulée "add.php"
+                            puis de réquisitionner le model.
+
+                            La réquisition du model dans la vue permet à celle-ci 
+                            d'exploiter n'importe quelle fonction contenue dans le model.
+
+                            - La vue intitulée "all.php" a vocation a afficher l'ensemble
+                            des "books". 
+                            
+                            - Les books sont récupérables à l'aide de la fonction getAll(), 
+                            issue du model.
+
+                            Il ne reste ainsi qu'à faire usage de la fonction getAll() dans la 
+                            vue intitulée "all.php" afin de récupérer l'ensemble des books.
+
+                            LE RESULTAT ISSU DE L'EXECUTION DE LA FONCTION GETALL() EST 
+                            A STOCKER DANS LA VARIABLE SUR LAQUELLE L'ITERATION EST 
+                            EFFECTIVE DANS LA VUE.
+                            DE CE FAIT, ON STOCKE GETALL() DANS UNE VARIABLE $RESULTS.
+
+                            MALHEUREUSEMENT CELA NE SUFFIT PAS :
+                            La fonction getAll() ne retourne aucune donnée.
+                            Il faut ainsi utiliser l'expression RETURN suivie de 
+                            la variable qui contient les données afin de les récupérer
+                            lors de son appel, sur la vue.
+
+                            /!/ RETURN s'utilise globalement lorsque l'on souhaite 
+                            récupérer / transmettre des données à une vue.
+                            On peut aussi l'utiliser afin de récupérer le résultat 
+                            d'une execution afin de procéder à un traitement
+                            suppélementaire dans le controlleur.
+
+                        4 - SUPPRESSION DU FICHIER INITIAL : 
+                            all.php (initial) est vide.
+                            Afin d'éviter de se mélanger avec, un conseil : supprimez le.
+
+                    C - Ouvrir le fichier "update.php".
+                        
+                        1 - Etudier ce qu'il en reste (Affichage ? Base de Données ? Logique ?)
+                            Effectivement, il comporte : 
+                            -> une première partie logique.
+                            -> une première partie BDD.
+                            -> une seconde partie logique.
+                            -> une seconde partie BDD.
+
+                            Nous allons ainsi isoler ces parties BDD dans le model, 
+                            sous forme de deux fonctions distinctes.
+
+                            POURQUOI DEUX FONCTIONS AU LIEU D'UNE SEULE QUI REGROUPE TOUT ?
+                            -> Simplement car les deux parties "Base de données" qui 
+                               composent le fichier "update.php" n'ont pas des finalités
+                               communes.
+
+                               En effet, la 1ère partie BDD permet de : 
+                               -> Récupérer les données du livre à modifier 
+                                  (afin de renseigner les champs sur la vue "update.php").
+                             
+                               La seconde partie BDD permet de : 
+                               -> Mettre à jour les informations du livre en base de données.
+                                  (selon les datas récupérées suite à l'envoi du formulaire).
+
+                        2 - CREATION DES FONCTIONS DANS LE MODEL :
+                        
+                            Au sein du MODEL, nous allons ainsi créer ces deux fonctions dont
+                            les noms équivoques pourraient êtres : 
+                            -> getOne()
+                            -> update()
+
+                            Puis nous isolerons chaque partie BDD dans la fonction qui 
+                            convient : 
+                            -> getOne(){ // première partie BDD // }
+                            -> update(){ // seconde partie BDD // }
+
+                            /!/ Les chemins permettants de réquisitionner la connexion à la 
+                            BDD ne sont plus cohérent : les deux sont aux même niveau.
+                            Idem pour la redirection vers la vue des erreurs (MAJ le chemin)
+
+                            /!/ C'est à cet instant précis qu'il convient de se poser la question 
+                            suivante :
+                            
+                            PARMI LES FONCTIONS CREES, L'UNE D'ENTRE ELLE OU BIEN LES DEUX 
+                            DOIT ELLE TRANSMETTRE DES DONNEES A UNE VUE ???
+
+                            -> OUI ! getOne() interroge la base de données afin de récupérer 
+                                     l'ensemble des informations au sujet du livre à modifier.
+
+                            Ces informations sont ensuite affichées dans la VUE (dans 
+                            les champs du formulaire de mise à jour).
+
+                            AINSI, IL CONVIENT DE RETOURNER LE RESULTAT DE LA REQUETE SQL
+                            A L'AIDE DE L'EXPRESSION RETURN.
+
+                            /!/ getOne() récupère les informations d'un livre en se basant sur 
+                            l'identifiant du livre. Il est donc nécessaire de lui confier un 
+                            paramètre. ($bookID)
+
+                            /!/ update() met à jour un livre dans la base de données en se 
+                            basant sur l'ensemble des données fournies par le formulaire.
+                            Il est donc nécessaire de lui confier autant de paramètre que 
+                            le formulaire comporte de champs, en plus de l'identifiant 
+                            (afin de mettre à jour un livre précisément ciblé).
+
+                            
+                            3 - LIAISON DU MODEL A LA VUE :
+
+                            L'ultime étape consiste à procéder à la liaison du MODEL et 
+                            de la VUE afin de : 
+
+                            -> Pouvoir afficher convenablement le formulaire 
+                               d'édition (pré-renseigné)
+                            -> Procéder à la mise à jour des données (suite à 
+                               la transmission du formulaire).
+
+                            Afin de pré-renseigner le formulaire d'édition : 
+                            -> Réquisitionner le model sur la vue (update.php).
+                            -> Faire appel à la fonction getOne.
+                            -> Passer en paramètre, l'identifiant du livre ($_POST["updateID"])
+                            -> Stocker le résultat de getOne dans une variable. ($book)
+
+                            Afin de procéder à la mise à jour en base de données : 
+                            -> Nous sommes bloqués (pour le moment).
+
+                            POURQUOI ? 
+                            CAR SUITE A L'ENVOI DU FORMULAIRE IL FAUDRAIT UNIQUEMENT 
+                            EXECUTER LA FONCTION "UPDATE" ISSUE DU MODEL. (hors de n'est 
+                            pas possible tel que nous nous y prenons).
+
+                            Pour se débloquer, cela demande d'aborder la notion de 
+                            CONTROLLEUR (que nous étudierons très prochainement).
+
+                    D - Ouvrir le fichier "add.php".
+                        
+                        1 - Etudier ce qu'il en reste (Affichage ? Base de Données ? Logique ?)
+                            Effectivement, il comporte : 
+                            -> Logique.
+                            -> Base de Données.
+
+                            Nous allons ainsi isoler la partie BDD dans le model, 
+                            sous forme de fonction.
+
+                        2 - CREATION DE LA FONCTION DANS LE MODEL :
+                        
+                            Au sein du MODEL, nous allons ainsi créer une fonction dont
+                            le nom équivoque pourraient être : add()
+                            Puis nous isolerons la partie Base de Données à l'intérieur.
+
+                            /!/ Le chemin permettant de réquisitionner la connexion à la 
+                            BDD n'est plus cohérent.
+                            Idem pour la redirection vers la vue "all.php" (MAJ le chemin)
+
+                            /!/ C'est à cet instant précis qu'il convient de se poser la question 
+                            suivante :
+                            
+                            LA FONCTION CREE DOIT ELLE TRANSMETTRE DES DONNEES A UNE VUE ???
+
+                            -> NON ! Elle ne s'occupe "que" de procéder à l'ajout en base de données.
+                                     Si l'on souhaite récupérer des information sur l'execution de la 
+                                     requête, alors il peut être intéressant de retourner celle-ci.
+
+                                     De notre côté, nous n'allons pas le faire. (parce que OSEF)
+
+                            /!/ add() ajoute un livre dans la base de données en se 
+                            basant sur l'ensemble des données fournies par le formulaire.
+                            Il est donc nécessaire de lui confier autant de paramètre que 
+                            le formulaire comporte de champs.
+
+                        3 - LIAISON DU MODEL A LA VUE :
+                            
+                            Au même titre que pour la mise à jour (update), nous sommes bloqués 
+                            (pour le moment).
+
+                            POURQUOI ? 
+                            CAR SUITE A L'ENVOI DU FORMULAIRE IL FAUDRAIT UNIQUEMENT 
+                            EXECUTER LA FONCTION "ADD" ISSUE DU MODEL. (hors de n'est 
+                            pas possible tel que nous nous y prenons).
+
+                            Pour se débloquer, cela demande d'aborder la notion de 
+                            CONTROLLEUR (que nous étudierons vraiment très prochainement).
+
+
+                    D - Ouvrir le fichier "delete.php".
+                        
+                        1 - Etudier ce qu'il en reste (Affichage ? Base de Données ? Logique ?)
+                            Effectivement, il comporte : 
+                            -> Logique (2 à 3 lignes).
+                            -> Base de Données (tout le reste).
+
+                        2 - CREATION DE LA FONCTION DANS LE MODEL :
+                        
+                            Nom équivoque : delete()
+                            Isoler la partie Base de Données à l'intérieur.
+
+                            /!/ Le chemin permettant de réquisitionner la connexion à la 
+                            BDD n'est plus cohérent.
+                            Idem pour la redirection vers la vue "all.php" ainsi que
+                            "error.php" (MAJ des chemins)
+
+                            /!/ C'est à cet instant précis qu'il convient de se poser la question 
+                            suivante :
+                            
+                            LA FONCTION CREE DOIT ELLE TRANSMETTRE DES DONNEES A UNE VUE ???
+
+                            -> NON ! Elle ne s'occupe "que" de procéder à la suppression en BDD.
+
+                            /!/ delete() supprime un livre de la base de données en se 
+                            basant sur un identifiant.
+                            Il est donc nécessaire de lui confier ce paramètre ($bookID).
+
+                        3 - LIAISON DU MODEL A LA VUE :
+                            
+                            Au même titre que pour la mise à jour (update) et l'ajout (add), 
+                            nous sommes bloqués (pour le moment).
+
+                            POURQUOI ? 
+                            CAR SUITE A LA SUPPRESSION D'UN LIVRE PASSE PAR L'ENVOI 
+                            D'UN FORMULAIRE (voir la vue "all.php").
+                            SUR CE FORMULAIRE IL FAUDRAIT UNIQUEMENT EXECUTER LA 
+                            FONCTION "DELETE" ISSUE DU MODEL. (hors de n'est 
+                            pas possible tel que nous nous y prenons).
+
+                            Pour se débloquer, cela demande d'aborder la notion de 
+                            CONTROLLEUR (que nous allons étudier de manière imminente !!!).
+
+                    /!/ AVANT DE POURSUIVRE SUR LES CONTROLLEURS :
+                        DANS LE FICHIER INDEX : NE PAS OUBLIER DE METTRE A JOUR LES CHEMINS AFIN 
+                        DE REQUISITIONNER LE HEADER ("app/core/views/header.php").
+
+                        IDEM POUR L'ATTRIBUT HREF QUI PERMET DE REDIRIGER VERS LA VUE 
+                        PERMETTANT D'AFFCIHER L'ENSEMBLE DES LIVRES ("app/core/views/book/all.php")
+
+            -> CONTROLLEURS :
+
+                À ce stade, notre application web ne fonctionne qu'à moitié :
+
+                    - Les vues s'affichent convenablement cependant, les formulaires qui y figurent sont 
+                      inexploitables. (l'ajout, la suppression et la modification en base de donnée ne 
+                      marche pas)
+
+                    - Les liens qui permettent d'accéder à tel ou tel fichier sont aussi à rallonge 
+                      (ce qui est relou). En plus de trahir la façon dont a été concue notre application 
+                      (sécurité), on peut vite se tromper lorsque l'on souhaite accéder à un fichier en 
+                      saisissant dans l'URL.
+
+                C'EST DONC LE MOMENT DE RESOUDRE CES PROBLEMATIQUES EN ABORDANT LA NOTION DE CONTROLLEURS.
+
+                THEORIE : 
+
+                RAPPEL DE COURS : Les controlleurs permettent la mise en relation entre MODELES et VUES.
+                                  À côté de cela, il permettent aussi de gérer l'aspect logique d'une partie 
+                                  de l'application (contrôle d'intégrité, et autres opérations sur les 
+                                  données tel que mise en minuscule, compter nb chars, conversion en JSON, etc)
+
+                COMPLEMENT DE COURS : 
+                    -> Un controlleur = 1 fichier que l'on crée par entité.
+                    -> Le nom du controlleur est défini par le nom de l'entité qu'il concerne puis suffixé 
+                    par le terme "controller" (le tout en camelCase).
+                    Ex : Dans notre cas l'entité est "book", donc notre controlleur s'intitullera 
+                    "bookController.php". (créer le fichier).
+
+                    -> Chaque controlleur est constitué de fonctions qui permettent de mettre 
+                    en relation les modèles et vues d'une même entité.
+                    Ex: Afin d'afficher l'ensemble des livres on pourrait imaginer que le bookControlleur 
+                        contienne une fonction intitulée "showAll()".
+                        Le corps de cette fonction mettrait ainsi en relation le model et la vue (all.php)
+                        de l'entité "book" (puisque nous travaillerions sur le bookController).
+                        COMMENT ? En y réquisionnant à la fois le bookModel et la vue (all.php).
+                        Au chargement de showAll(), le bookModel et la vue seraient ainsi chargés et tout 
+                        fonctionnerait, en théorie, parfaitement.
+
+                    -> Les controlleurs sont tous répertoriés dans le dossier du même nom (à l'exception du 
+                    FRONT CONTROLLER que l'on place généralement à la racine du répertoire "public").
+
+                    FRONT CONTROLLER ? (c'est quoi encore ce truc ?!! Rien de bien complexe)
+                    -> C'est réellement lui le chef d'orchestre de l'application.
+                       En fonction des paramètres passés dans l'URL du fichier "index.php" il : 
+                       1 - Réquisitionne le controlleur souhaité.
+                       2 - Execute la fonction souhaitée issue du controlleur réquisitionné.
+                       3 - Charge le tout sur le fichier index.php.
+
+                    Exemple : index.php?controller=book&action=showAll
+                    Va réquisitionner le "bookControlleur", éxécuter la fonction qui y figure showAll().
+                    Tel que décrit précédemment, cette fonction showAll() réquisitionnera elle même le 
+                    "bookModel" ainsi que la vue (all.php).
+                    Le tout sera ensuite chargé sur la page index.php.
+
+                    Ainsi vous l'aurez compris : l'application sera centralisée sur le fichier index.php.
+                    Ce qui y sera affiché (les vues) mais aussi les actions dépendront de paramètres 
+                    saisis dans l'URL.
+
+                    En soit, c'est grâce au FRONT CONTROLLER que nos URL seront un peu plus "simples".
+                    POURQUOI ? Car nous n'aurons plus à naviguer de répertoire en répertoire afin 
+                    d'accéder à tel ou tel fichier : seulement de renseigner une URL avec paramètres adéquats.
+
+                    Cette pratique permettra (ultérieurement )aussi de procéder à de la ré-écriture d'URL, 
+                    c'est à dire passer de quelque chose du genre : 
+
+                    -> https://projet.test/index.php?controlleur=book&action=showAll 
+                    -> https://projet.test/book/all
+
+                    La ré-écriture d'URL comporte de nombreux avantages que nous détaillerons au cours 
+                    de la séance dédiée.
+
+                    /!/ Chaque projet MVC comporte un FRONT CONTROLLER et il est GLOBALEMENT IDENTIQUE
+                        en tous points à celui que nous concevrons tout à l'heure.
+
+                    /!/ IL EST A NOTER QUE LE FRONT CONTROLLER EST EGALEMENT PARFOIS NOMME : "ROUTEUR".
+                        En considérant qu'une URL fait office de ROUTE permettant d'accéder à une ressource,
+                        il est tout à fait pertinent de le nommer de cette façon.
+
+                    POUR RESUMER : 
+                        -> Deux types de controlleurs : 
+                            Controlleurs d'entité : met en relation les VUES & MODELES d'une entité.
+                            Controlleur frontal : réquisitionne le controlleur d'entité adéquat 
+                                                  et execute la bonne fonction selon les paramètres 
+                                                  passés dans l'URL du fichier "index.php".
+
+                        -> L'application sera centralisée sur le fichier "index.php", ce qui fournira
+                           la possibilité de procéder à de la réécriture d'URL (plus tard).
+
+                    EN PRATIQUE : 
+
+                    Créer le fichier "router.php" (FRONT CONTROLLER) dans à la racine du répertoire "public".
+                    Si ce n'est pas encore fait, créer le fichier "bookController.php" au sein du répertoire 
+                    "app/core/controllers".
+
+                    1 - LE CONTROLLEUR D'ENTITE (bookController) :
+
+                        A - CREATION DES FONCTIONS D'INTERACTIONS : 
+
+                        Afin de convenablement structurer les choses, nous allons y créer autant de fonctions
+                        que d'intéractions prévues sur l'entité "book".
+
+                        /!/ Le terme intéraction désigne ici une fonctionnalité unique, précise et 
+                            surtout pouvant être éxécutée de façon indépendante.
+
+                            Par exemple : ajouter un book ne correspond pas à ces critères.
+                            En effet, l'ajout d'un book consiste en deux choses distinctes & indépendantes : 
+                                1 - l'affichage d'un formulaire.
+                                2 - l'insertion en base de données.
+
+                        JUSTIFICATION APPROFONDIE :
+
+                        1 - L'affichage d'un formulaire d'ajout peut être effectué de manière indépendante,
+                            c'est à dire sur n'importe quelle page. (en complément ou non d'autres contenus :
+                            sous forme de composante).
+
+                        2 - L'insertion en base de données dépend de la transmission du formulaire cependant,
+                            elle ne dépend pas de la page sur laquelle se situe ce formulaire.
+                            On raisonne désormais en terme de fonctionnalités indépendantes / composante et non plus 
+                            en terme de fichiers. 
+
+                        Réfléchissons donc quelques minutes à ce que l'on envisage en terme de fonctionnalités
+                        indépendantes sur l'entité "book" :
+                            -> Afficher l'ensemble des "books".
+                            -> Afficher le formulaire d'ajout.
+                            -> Procéder à l'insertion de données (suite à l'envoi du form d'ajout).
+                            -> Afficher le formulaire de mise à jour.
+                            -> Procéder à la mise à jour des données (suite à l'envoi du form d'update).
+                            -> Procéder à la suppression d'une donnée.
+
+                        Donnons à chacune de ces fonctionnalités, un nom anglais équivoque puis créeons 
+                        les fonctions vides associées (en respectant camelCase):
+
+                            -> showAll() : Afficher l'ensemble des "books"
+                            -> showAddForm() : Afficher le formulaire d'ajout.
+                            -> insert() : Procéder à l'insertion de données.
+                            -> showUpdateForm() : Afficher le formulaire de mise à jour.
+                            -> update() : Procéder à la mise à jour des données.
+                            -> delete() : Procéder à la suppression d'une donnée.
+
+                        /!/ Nous faisons ici face à une limitation associée à la programmation procédurale.
+                            En effet, le fichier "bookModel.php" dispose déja des fonctions "update()" et 
+                            "delete()". Ainsi il est fort probable de faire face à un conflit en continuant
+                            de la sorte, d'autant plus que le bookController va réquisitionner le bookModel 
+                            afin d'effectuer les relations entre la partie BDD de l'app et les VUES.
+
+                            De ce fait, il est préférable de nommer différemment "update()" et "delete()"
+                            du "bookController" afin d'éviter les conflits tel que : 
+                                -> update() : refurbish()
+                                -> delete() : drop()
+
+                        B - LIAISON DU CONTROLLEUR D'ENTITE AVEC LE FICHIER INDEX.PHP (via FRONT CONTROLLER).
+                            
+                            Tel qu'évoqué en début de séance théorique sur les controllers, notre application 
+                            MVC a vocation à être centralisée sur le fichier "index.php".
+                            L'affichage de telle ou telle information sera donc effective selon 
+                            différents paramètres saisis dans l'URL. (controller & action)
+
+                            Autant y passer maintenant : ce ne sera plus à faire.
+
+                            1 - Dans un premier temps, il convient de réquisitionner le fichier "routeur.php"
+                                dans l'index (index.php).
+
+                            2 - Au sein du fichier "router.php" nous allons ensuite respectivement procéder au 
+                                contrôle de la présence des paramètres "controller" et "action" dans l'URL.
+
+                                RAPPEL : LES PARAMETRES SITUES DANS L'URL SONT RECUPERABLES A L'AIDE DE LA 
+                                         VARIABLE SUPERGLOBALE $_GET.
+
+                                        if(isset($_GET["controller"])){}
+                                        if(isset($_GET["action"])){}
+
+                                /!/ Prévoir l'éventualité selon laquelle AUCUN CONTROLLEUR / AUCUNE ACTION
+                                    n'aurait été renseignée dans l'URL en initialisant deux variables tel que 
+                                    présenté ci dessous : 
+
+                                        $controller = "book";
+                                        $action = "showAll";
+
+                                Ainsi, quoi qu'il arrive si rien n'a été renseigné la page ne restera pas vide.
+
+                            3 - Au sein de chaque condition, remplacer la valeur de chaque variable 
+                                initialisée par celles passées dans l'URL via $_GET.
+
+                                        if(isset($_GET["controller"])){
+                                            $controller = $_GET["controller"];
+                                        }
+
+                                        if(isset($_GET["action"])){
+                                            $action = $_GET["action"];
+                                        }
+                            
+                            4 - Réquisition du controlleur d'entité.
+
+                                Suite aux conditions, la réquisition du controlleur passé en paramètres 
+                                s'effectue à l'aide de l'expression "require_once" tel que :
+
+                                        require_once("./app/core/controllers/".$controller."Controller.php");
+                                
+                                /!/ Le chemin fourni peut vous paraître erroné cependant, sachez que désormais
+                                    notre application se base sur le fichier "index.php".
+                                    Il est donc logique de réquisitionner le controller depuis cet endroit.
+
+                            5 - Execution de la fonction adéquate.
+                                
+                                Ne reste qu'une ultime chose à faire : éxécuter la fonction du controlleur réquisitionné.
+                                Pour cela : 
+                                        
+                                        $action();
+
+                                Pour aller + loin, nous pourrions nous assurer que la saisie des paramètres 
+                                est conforme au type de données attendues (qu'il s'agit de texte, sans espaces,
+                                en minuscule, etc.)
+
+
+                            POUR RESUMER : 
+                            La réquisition du "router.php" dans le fichier "index.php" permet de charger
+                            automatiquement un controlleur et une action (selon les paramètres saisis dans l'URL, 
+                            sur la page index.) 
+                            Au cas où aucun paramètre n'a été communiqué, un affichage de secours est prévu.
+                            (via initialisation des variables $controller et $action).
+
+
+                        C - LIAISON ENTRE LE CONTROLLEUR D'ENTITE ET LE MODEL ASSOCIE :
+
+                            Tel qu'évoqué en début de séance théorique sur les controllers, ceux-ci font 
+                            la liaison entre la partie MODELE d'une entité et les VUES associées.
+
+                            Ainsi, nous allons réquisitionner le MODELE associé à l'entité sur laquelle nous 
+                            travaillons (bookModel) sur le bookController.
+
+                            /!/ Puisque notre application se base désormais sur le fichier "index.php", 
+                                la réquisition du "bookModel.php" doit également être effective depuis 
+                                ce fichier.
+
+                                En d'autres termes le chemin devrait être le suivant :
+                                require_once('./app/core/models/bookModel.php');
+                        
+                        D - REMPLISSAGE DU CORPS DES FONCTIONS DU BOOKCONTROLLER :
+
+                            Afin de pouvoir exploiter notre bookControlleur, il reste à renseigner 
+                            le corps de chaque fonction.
+                            
+                            Pour chacune des fonctions il est impératif de comprendre son usage ainsi que 
+                            de se souvenir des VUES et fonctions du MODEL précédemment créé.
+
+                            1 - La fonction "showAll()" :
+                                
+                                Dans un premier temps, on se demande ce à quoi sers cette fonction.
+                                De part son nom, on en déduit assez facilement qu'elle a pour utilité 
+                                l'affichage de l'ensemble des données au sujet d'une entité.
+
+                                Comme depuis tout à l'heure nous travaillons sur l'entité "book", 
+                                showAll() permet donc d'afficher l'ensemble des "books".
+
+                                Ainsi, il """suffit""" de renseigner dans le corps de showAll() tout ce qui 
+                                permet d'afficher tous les livres.
+
+                                QU'EST CE QUI PERMETS D'AFFICHER L'ENSEMBLE DES LIVRES ?
+
+                                Réponse :
+                                -> le fonction getAll() (issue du bookModel). 
+                                   Qui permet d'aller chercher en base de données l'ensemble des books.
+
+                                -> la vue (book/all.php).
+                                   Qui exploite la fonction getAll() afin d'afficher sous forme de tableau HTML.
+
+                                Ainsi, il ne reste qu'à remplir le corps de la fonction showAll() de 
+                                la façon suivante :
+
+                                        function showAll(){
+                                            $results = getAll();
+                                            require_once('./app/core/views/book/all.php');
+                                        }
+
+                                /!/ Ce code fait doublon avec ce qui se trouve au tout début de "all.php".
+                                    De plus les chemins réquisitionnés ne sont plus cohérents sur la VUE.
+                                    Etant donné que ça fait doublon et que les chemins ne sont plus bons,
+                                    Hop ! Autant supprimer ces instructions de la VUE (all.php).
+
+                                EH VOILA ! CA DEVRAIT FONCTIONNER !
+                                RESTE A ESSAYER D'ACCEDER A LA VUE QUI LISTE L'ENSEMBLE DES BOOKS VIA :
+
+                                -> https://votre-domaine.test/index.php?controller=book&action=showAll
+
+                            2 - La fonction "showAddForm()" :
+
+                                Idem qu'au préalable : on se demande ce à quoi sert cette fonction :
+                                -> afficher le formulaire d'ajout.
+
+                                Le formulaire d'ajout dépend-il d'autre chose ?
+                                (ex: de données issues du model / base de données) ?
+                                NON ! Il s'agit juste d'un formulaire classique. (une banale vue).
+
+                                Dans ce cas, le corps de cette fonction ne comporte que la réquisition de 
+                                la vue adéquate telle que : 
+
+                                        require_once('./app/core/views/book/add.php');
+
+                                /!/ Au même titre que la vue précédemment traitée (all.php), 
+                                le fichier "header.php" est réquisitionné à deux reprises :
+                                    -> sur le fichier index.php
+                                    -> dans la vue ("add.php").
+
+                                /!/ Ce code fait doublon.
+                                    De plus le chemin réquisitionné sur la VUE est erroné.
+                                    Hop ! Autant supprimer cette instructions de la VUE (add.php).
+
+                                EH VOILA ! CA DEVRAIT FONCTIONNER !
+                                RESTE A ESSAYER D'ACCEDER A LA VUE QUI LISTE L'ENSEMBLE DES BOOKS VIA :
+
+                                -> ./index.php?controller=book&action=showAddForm
+
+                                /!/ C'est cette même URL qui sera à spécifier pour accéder au formulaire
+                                    d'ajout depuis un lien.
+
+                                    Mettons ainsi à jour la valeur de l'attribut HREF du lien redirigeant
+                                    vers la formulaire d'ajout, sur la VUE "book/all.php".
+
+                            3 - La fonction "insert()" :
+
+                                Idem qu'au préalable : on se demande ce à quoi sert cette fonction :
+                                -> Insérer des informations en BDD (recueillies du formulaire d'ajout).
+
+                                Etant donné que ces informations proviennent du formulaire d'ajout, il est 
+                                impératif de lier ce formulaire à l'action "insert()" du bookController.
+                                Ainsi, lors de la soumission de celui-ci, les informations communiquées au 
+                                bookController pourront être insérées en base de données.
+
+                                Dit comme çà, ça parrait compliqué alors qu'en fait : pas du tout.
+
+                                QUE POUVONS NOUS DEDUIRE DU FONCTIONNEMENT D'UN CONTROLLEUR D'ENTITE ?
+                                    -> Le fait d'intérroger une URL (au sein de laquelle figurent 
+                                       certains paramètres) permet de réquisitionner un controlleur 
+                                       et d'éxécuter une de ses fonctions.
+                                       
+                                       Exemple : 
+                                       -> https:// .... /index.php?controller=book&action=showAll
+                                       -> Permet d'executer la fonction showAll() du bookController.
+
+                                Sachant cela, on peut en déduire qu'appeler : 
+                                    -> https:// .... /index.php?controller=book&action=insert
+                                    -> Permettra d'executer la fonction insert() du bookController.
+                                      (et possiblement d'insérer des informations en BDD suivant ce que 
+                                      contient le corps de la fonction).
+
+                                Selon cette déduction, la première étape consite donc à mettre à jour 
+                                la valeur de l'attribut "action" du formulaire d'ajout par l'URL qui 
+                                permettra l'ajout en base de données.
+
+                                Cette URL est la suivante : 
+                                -> ./index.php?controller=book&action=insert
+
+                                De ce fait, à la soumission du formulaire d'ajout, la fonction insert() 
+                                du bookController sera désormais executée.
+                                
+                                RESTE A RENSEIGNER CONVENABLEMENT LE CORPS DE CETTE FONCTION : 
+
+                                Pour cela, il faut désormais se questionner sur ce qui permet l'ajout 
+                                d'informations en Base de Données.
+
+                                De souvenir, nous disposons d'une fonction dédiée à l'ajout de données 
+                                au sein du bookModel.
+
+                                /!/ Pour rappel cette fonction s'intitule "add()" et prends 3 paramètres qui 
+                                correspondent respectivement : 
+                                    -> au titre
+                                    -> à la description
+                                    -> au prix
+
+                                On cherche donc à récupérer ces informations.
+
+                                D'OÙ PROVIENNENT CES DONNEES ?
+                                -> De la transmission du formulaire d'ajout !
+
+                                Ainsi, d'un simple coup d'oeil, nous savons qu'elles transitent par méthode POST.
+                                Pour récupérer chaque données on exploite donc la variable globale $_POST.
+                                
+                                Suffit de passer ces données en paramètres de la fonction "add()" et c'est gagné.
+                                L'ajout devrait en théorie fonctionner.
+
+                                        function insert(){
+                                            add($_POST["titre"], $_POST["description"], $_POST["prix"]);
+                                        }
+                                
+                                /!/ Au sein de la fonction "add()" (dans le bookModel), si l'execution se 
+                                    déroule correctement, alors on redirige vers la VUE qui resence 
+                                    l'ensemble des livres.
+
+                                    SAUF QUE SUITE A NOS MANIPULATIONS, L'URL N'EST PLUS ADEQUATE.
+                                    IL SERAIT SYMPA DE LA REMPLACER PAR :
+                                    -> header('Location: ./index.php?action=showAll');
+
+                                /!/ Profitons en pour rectifer toutes les URL inadéquates du MODEL. 😎
+
+                                EH VOILA ! CA DEVRAIT FONCTIONNER !
+                                GO TESTER EN ACCEDANT AU FORMULAIRE D'AJOUT !
+
+                                /!/ Pour aller plus loin, il serait intéressant de contrôler la 
+                                    réception des données ainsi que leur intégrité.
+
+                                    Selon MVC, c'est au sein du CONTROLLEUR que s'effectuent 
+                                    ces contrôles (plus exactement dans la fonction insert()) tel que 
+                                    présenté ci-après : 
+
+                                            function insert(){
+                                                // Contrôle d'envoi du formulaire (if(isset($_POST)))
+                                                    // Contrôle d'intégrité des données ? //
+                                                        // Si tout se passe bien :
+                                                            add($_POST["titre"], $_POST["description"], $_POST["prix"]);
+                                                        // Sinon 
+                                                    // Fin du contrôle d'intégrité
+                                                // Fin du contrôle de réception des données via POST
+                                            }
+
+                            4 - La fonction "drop()" :
+                                    Idem qu'au préalable : on se demande ce à quoi sert cette fonction :
+                                    -> Supprimer un book de la BDD (en fonction d'un ID).
+
+                                    L'action de suppression est lancée suite à la soumission d'un 
+                                    formulaire sur la VUE (book/all.php).
+
+                                    On connaît par avance l'URL qui déclenchera cette suppression :
+                                    -> ./index.php?controller=book&action=drop
+
+                                    On se rend donc sur la VUE (book/all.php) et on met l'URL de l'action.
+
+                                    L'action de suppression s'effectue à l'aide d'une fonction provenant 
+                                    du bookModel : "delete()"
+
+                                    /!/ Cette fonction prends en paramètre l'identifiant d'un book.
+                                        Cet identifiant est récupéré via $_POST (suite à l'envoi du form).
+
+                                                function drop(){
+                                                    delete($_POST["deleteID"]);
+                                                }
+
+                                EH VOILA ! CA DEVRAIT FONCTIONNER !
+                                GO TESTER !
+                                        
+
+                            5 - AUX STAGIAIRES : 
+                                Les fonctions showUpdateForm() et refurbish().
+
+                                Correction : showUpdateForm()
+
+                                On se rend donc sur la VUE (book/all.php) et on met l'URL de l'action.
+                                -> ./index.php?controller=book&action=showUpdateForm
+
+                                Le formulaire de mise à jour est pre-renseigné.
+                                il est donc nécessaire de récupérer les données du livre à MAJ à l'aide 
+                                de la fonction getOne() issue du bookModel.
+
+                                Puis de réquisitionner la VUE (update.php)
+                                        function showUpdateForm(){
+                                            $book = getOne($_POST["updateID"]);
+                                            require_once('./app/core/views/book/update.php');
+                                        }
+
+                                /!/ Pour que ça fonctionne, ne pas oublier de virer les redondances 
+                                en haut de la vue (update.php) : require header, model & la variable = getOne.
+
+
+                                Correction : refurbish()
+
+                                Mettre à jour l'URL de l'action du formulaire sur la VUE (update.php)
+                                -> ./index.php?controller=book&action=refurbish
+
+                                        function refurbish(){
+                                            update($_POST["titre"], $_POST["description"], $_POST["prix"], $_POST["bookID"]);
+                                        }
+
+
+                            6 - On se rend compte que l'on a plus besoin du répertoire webfiles :
+                                Puisque l'application se situe dans le repertoire APP, plus besoin de webfiles
+                                Du coup ... Hop ! Go le supprimer ! 😎
+
+                            7 - Conclusion : 
+                                MVC fait intervenir une gymnastique d'esprit particulière.
+                                Elle n'est pas forcément évidente à appréhender au début, mais à force 
+                                de travailler avec, ce sera naturel (un peu comme écrire de l'HTML il 
+                                y a quelques mois VS aujourd'hui).
+
+                                Les couches FRONT END et BACK END sont segmentées.
+                                Ainsi un DEV FRONT peut bosser sans interférer avec un DEV BACK et vice versa.
+
+
+    Feuille de route globale : 
+    - TOUJOURS COMMENCER PAR ISOLER LA PARTIE VUE (le code qui contient majoritairement de l'HTML).
+    - POURSUIVRE AVEC L'ISOLATION DE LA PARTIE MODELE (le code qui contient la connexion à la BDD + requetes)
+    - FINALISER AVEC LE CONTROLLEUR (ce qui reste, on sais que ce sera dans le controlleur). 
+
+
+    Exercies pour prendre en mains le MVC : 
+
+    1 - Ajout d'une entité (users) à l'application : possibilité de créer, modifier, supprimer, afficher des users.
+    2 - Création d'un projet MVC (de zéro) sur un sujet thème libre.
+    3 - Création d'une plateforme de tchat en ligne faisant intervenir un MVC Procédural (Groupe de 5).
